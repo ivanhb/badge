@@ -8,6 +8,10 @@ var badge_conf = {
 					'format': 'json',
 					//can preview on_badge any value inside the fields, is chosen from the html tag attribute 'preview'
 		      'fields': ['citation_count','year'],
+					'labels': {
+						'citation_count': 'Citations',
+						'year': 'Year',
+					},
 		      "respects": [],
 			},
 
@@ -44,19 +48,21 @@ var badge = (function () {
 		for (var i = 0; i < ocbadge_list.length; i++) {
 			var ocbadge_obj = ocbadge_list[i];
 			var badge_cat = badge_conf_cat[ocbadge_obj['type']];
-			var text_query = badge_util.build_text_query({},badge_cat.source.call,ocbadge_obj.input);
+			var text_query = badge_util.build_text_query({},badge_cat.source.call, ocbadge_obj.input);
+			var href_onclick = badge_util.build_text_query({},badge_cat.onclick_link, ocbadge_obj.input);
 
 			badge_calls[text_query] = {
 				'data': null,
 				'type': ocbadge_obj['type'],
 				'input': ocbadge_obj['input'],
 				'preview': ocbadge_obj['preview'],
+				'labels': badge_cat.source.labels,
 				'name': badge_cat.source.name,
 				'format': badge_cat.source.format,
 				'respects': badge_cat.source.respects,
 				'fields': badge_cat.source.fields,
 				'onhighlighting': badge_cat.onhighlighting,
-	      'onclick_link': badge_cat.onclick_link
+	      'onclick_link': href_onclick
 			};
 
 			//execute the calls
@@ -96,7 +102,6 @@ var badge = (function () {
 																call_obj.fields,
 																call_obj.respects);
 
-		console.log(badge_calls[result_obj.call_url]);
 		//build the html dom now
 		badge_htmldom.build_badge(badge_calls[result_obj.call_url]);
 	}
@@ -205,16 +210,34 @@ var badge_htmldom = (function () {
 	function build_badge(obj_call) {
 		for (var i = 0; i < ocbadge_container.length; i++) {
 			var ocbadge_obj = ocbadge_container[i];
-			console.log(ocbadge_obj);
-			console.log(obj_call);
-			if( (ocbadge_obj.type == obj_call.type) && (ocbadge_obj.input == obj_call.input) && (ocbadge_obj.preview == obj_call.preview)
-			){
-				var lbl = document.createElement("label");
-				div_val.innerHTML = obj_call.data[obj_call.preview];
 
-				//
-				ocbadge_obj.appendChild(lbl);
-				console.log(ocbadge_obj);
+			if( (ocbadge_obj.getAttribute('type') == obj_call.type) &&
+					(ocbadge_obj.getAttribute('input') == obj_call.input) &&
+					(ocbadge_obj.getAttribute('preview') == obj_call.preview)
+			){
+				var div_c = document.createElement("div");
+				var lbl = "";
+				if (obj_call.preview in obj_call.labels) {
+					lbl = obj_call.labels[obj_call.preview];
+				}
+
+				var logo_html_style = `
+												 /*writing-mode: vertical-rl;*/
+												 /*text-orientation: mixed;*/
+												 font-size: 1.3rem;
+												 display: inline-block;
+												 margin:0 auto;
+												 padding-right: 2.5%;
+												 `;
+
+				var label_html_style = `font-size: 1.8rem; display: inline-block; border-left: 1px solid; padding-left:2%;`;
+				var badge_html_style = `padding-right: 5%; display: inline-block;`;
+				var value_html_style = `font-size: 1.8rem;`;
+
+				div_c.innerHTML = '<div><a style="border: 1px solid gray;" class="btn btn-outline-light btn-lg" href="'+obj_call.onclick_link+'"><div style="'+logo_html_style+'"> <img src="img/logo.png" width="25" height="25"> </div> <div style="'+label_html_style+'">'+lbl+'</div> <div style="'+badge_html_style+'"> <span class="badge" style="'+value_html_style+'">'+obj_call.data[obj_call.preview]+'</span> </div></a></div>';
+
+				//create it inside the tag
+				ocbadge_obj.appendChild(div_c);
 			}
 
 		}
@@ -232,7 +255,5 @@ var badge_htmldom = (function () {
 
 //init badge dict
 badge.init_badge_index(ocbadge_container);
-
-console.log(ocbadge_list);
 
 badge.get_preview_data(ocbadge_list, badge_conf.category);
