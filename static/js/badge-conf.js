@@ -1,2 +1,1 @@
-var badge_conf = {
-}
+
