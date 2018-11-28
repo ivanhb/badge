@@ -23,13 +23,13 @@ var badge_conf = {
   }
 }
 
-var ocbadge_container = document.getElementsByTagName("ocbadge");
-var ocbadge_list = [];
-var badge_calls = {};
+//GLOBALS
+var ocbadge_container = document.getElementsByClassName("__oc_badge__");
 
-
-
+//BADGE MODULES
 var badge = (function () {
+	var ocbadge_list = [];
+	var badge_calls = {};
 
 	function init_badge_index(ocbadge_container) {
 		//init badge dict
@@ -44,14 +44,15 @@ var badge = (function () {
 		}
 	}
 
-	function get_preview_data(ocbadge_list, badge_conf_cat) {
+	function get_preview_data(badge_conf_cat) {
 		for (var i = 0; i < ocbadge_list.length; i++) {
 			var ocbadge_obj = ocbadge_list[i];
 			var badge_cat = badge_conf_cat[ocbadge_obj['type']];
 			var text_query = badge_util.build_text_query({},badge_cat.source.call, ocbadge_obj.input);
 			var href_onclick = badge_util.build_text_query({},badge_cat.onclick_link, ocbadge_obj.input);
 
-			badge_calls[text_query] = {
+			var text_query_key = text_query+"[["+ocbadge_obj['preview']+"]]";
+			badge_calls[text_query_key] = {
 				'data': null,
 				'type': ocbadge_obj['type'],
 				'input': ocbadge_obj['input'],
@@ -62,18 +63,20 @@ var badge = (function () {
 				'respects': badge_cat.source.respects,
 				'fields': badge_cat.source.fields,
 				'onhighlighting': badge_cat.onhighlighting,
-	      'onclick_link': href_onclick
+				'onclick_link': href_onclick
 			};
 
 			//execute the calls
-			call_service(text_query);
+			call_service(text_query, text_query_key);
 
 		}
 	}
 
-	function call_service(call_url, def_callbk = badge_callbk) {
+	function call_service(call_url, key, def_callbk = badge_callbk) {
 
-	  var result = {};
+		badge_util.httpGetAsync(call_url, key, badge_callbk);
+		/*with jquery
+		var result = {};
 		$.ajax({
 					url: call_url,
 					type: 'GET',
@@ -84,12 +87,14 @@ var badge = (function () {
 						Reflect.apply(def_callbk,undefined,[result]);
 					}
 		 });
+		 */
 	}
 
 	function badge_callbk(result_obj){
+
 		var call_obj = null;
-		if (result_obj.call_url in badge_calls) {
-			call_obj = badge_calls[result_obj.call_url];
+		if (result_obj.key in badge_calls) {
+			call_obj = badge_calls[result_obj.key];
 		}
 
 		if (call_obj == null) {
@@ -97,13 +102,13 @@ var badge = (function () {
 		}
 
 		//insert the data retrieved
-		badge_calls[result_obj.call_url].data = badge_util.get_values_with_rist(
+		badge_calls[result_obj.key].data = badge_util.get_values_with_rist(
 																result_obj.data,
 																call_obj.fields,
 																call_obj.respects);
 
 		//build the html dom now
-		badge_htmldom.build_badge(badge_calls[result_obj.call_url]);
+		badge_htmldom.build_badge(badge_calls[result_obj.key]);
 	}
 
 	return {
@@ -112,10 +117,51 @@ var badge = (function () {
 		get_preview_data: get_preview_data
 	}
 })();
-
-
 var badge_util = (function () {
 
+	function get_all_elements_with_attribute(attribute, value)
+	{
+	  var matchingElements = [];
+	  var allElements = document.getElementsByTagName('*');
+	  for (var i = 0, n = allElements.length; i < n; i++)
+	  {
+	    if (allElements[i].getAttribute(attribute) !== null)
+	    {
+				if (allElements[i].getAttribute(attribute) == value) {
+					// Element exists with attribute. Add to array.
+		      matchingElements.push(allElements[i]);
+				}
+	    }
+	  }
+	  return matchingElements;
+	}
+
+	function get_list_elem(list, field, value) {
+		for (var i = 0; i < list.length; i++) {
+			if(list[i][field] == value){
+				return list[i];
+			}
+		}
+		return -1;
+	}
+
+	function httpGetAsync(theUrl, key, callback){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', theUrl);
+		xhr.onload = function() {
+		    if (xhr.status === 200) {
+						var result = {};
+						result['call_url'] = theUrl;
+						result['key'] = key;
+						result['data'] = JSON.parse(xhr.responseText);
+						Reflect.apply(callback,undefined,[result]);
+		    }
+		    else {
+		        console.log("Error: "+xhr.status);
+		    }
+		};
+		xhr.send();
+	}
 	function build_text_query(one_result, query_text, def = null) {
 			var myRegexp = /\[\[(.*)\]\]/g;
 			var match = myRegexp.exec(query_text);
@@ -201,11 +247,43 @@ var badge_util = (function () {
 	}
 	return {
 		//test_func: test_func
+		get_all_elements_with_attribute: get_all_elements_with_attribute,
+		get_list_elem: get_list_elem,
+		httpGetAsync: httpGetAsync,
 		build_text_query: build_text_query,
 		get_values_with_rist: get_values_with_rist
 	}
 })();
 var badge_htmldom = (function () {
+
+	//CSS RULES GLOB
+	var onmouseover = `
+				this.style.borderTop='4px solid';
+				this.style.borderBottom='4px solid';
+				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '52' ;
+				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '52' ;
+				`;
+
+	var onmouseout = `
+				this.style.borderTop='1px solid';
+				this.style.borderBottom='1px solid';
+				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '42' ;
+				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '42' ;
+				`;
+	//onmouseover="this.style.borderTop='4px solid'"
+	var a_html_style = `border-bottom: 1px solid;`;
+	var logo_html_style = `
+									 /*writing-mode: vertical-rl;*/
+									 /*text-orientation: mixed;*/
+									 font-size: 1.3rem;
+									 display: inline-block;
+									 margin:0 auto;
+									 padding-right: 2.5%;
+									 `;
+
+	var label_html_style = `font-size: 1.8rem; display: inline-block; padding-left:2%;`;
+	var badge_html_style = `padding-right: 5%; display: inline-block;`;
+	var value_html_style = `font-size: 2.1rem;`;
 
 	function build_badge(obj_call) {
 		for (var i = 0; i < ocbadge_container.length; i++) {
@@ -221,20 +299,21 @@ var badge_htmldom = (function () {
 					lbl = obj_call.labels[obj_call.preview];
 				}
 
-				var logo_html_style = `
-												 /*writing-mode: vertical-rl;*/
-												 /*text-orientation: mixed;*/
-												 font-size: 1.3rem;
-												 display: inline-block;
-												 margin:0 auto;
-												 padding-right: 2.5%;
-												 `;
+				//div_c.innerHTML = '<div><a style="'+a_html_style+'" class="btn btn-outline-light btn-lg" href="'+obj_call.onclick_link+'"><div style="'+logo_html_style+'"> <img src="img/logo.png" width="25" height="25"> </div> <div style="'+label_html_style+'">'+lbl+'</div> <div style="'+badge_html_style+'"> <span class="" style="'+value_html_style+'">'+obj_call.data[obj_call.preview]+'</span> </div></a></div>';
 
-				var label_html_style = `font-size: 1.8rem; display: inline-block; border-left: 1px solid; padding-left:2%;`;
-				var badge_html_style = `padding-right: 5%; display: inline-block;`;
-				var value_html_style = `font-size: 1.8rem;`;
-
-				div_c.innerHTML = '<div><a style="border: 1px solid gray;" class="btn btn-outline-light btn-lg" href="'+obj_call.onclick_link+'"><div style="'+logo_html_style+'"> <img src="img/logo.png" width="25" height="25"> </div> <div style="'+label_html_style+'">'+lbl+'</div> <div style="'+badge_html_style+'"> <span class="badge" style="'+value_html_style+'">'+obj_call.data[obj_call.preview]+'</span> </div></a></div>';
+				div_c.innerHTML =
+				`
+				<table>
+					<tr style="">
+					<td style=""> <img class="logo-img-oc" id="`+i+`" src="img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
+					<td style="">
+							<a id="`+i+`" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`" style="border-bottom: 1px solid; border-top: 1px solid;" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
+							<div style="font-size: 1.45rem; display: inline-block; padding-left:2%;">`+lbl+`</div> </br><div style="padding-right: 5%; display: inline-block;"> <span class="" style="font-size: 2.1rem;">`+obj_call.data[obj_call.preview]+`</span></div>
+							</a>
+					</td>
+					</tr>
+				</table>
+				`;
 
 				//create it inside the tag
 				ocbadge_obj.appendChild(div_c);
@@ -249,11 +328,24 @@ var badge_htmldom = (function () {
 	}
 })();
 
+//THE SCRIPT DOM
+var script_dom = badge_util.get_all_elements_with_attribute("src","static/js/badge.js");
+
+//INCLUDE JQUERY
+var script = document.createElement('script');
+script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js';
+script_dom[0].appendChild(script);
+
+var css = document.createElement('link');
+css.rel = "stylesheet";
+css.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css';
+script_dom[0].appendChild(css);
+
+script = document.createElement('script');
+script.src = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js';
+script_dom[0].appendChild(script);
 
 
-//The main code
-
-//init badge dict
+//MAIN
 badge.init_badge_index(ocbadge_container);
-
-badge.get_preview_data(ocbadge_list, badge_conf.category);
+badge.get_preview_data(badge_conf.category);
