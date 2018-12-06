@@ -254,19 +254,21 @@ var badge_util = (function () {
 		get_values_with_rist: get_values_with_rist
 	}
 })();
+
+
 var badge_htmldom = (function () {
 
 	//CSS RULES GLOB
 	var onmouseover = `
-				this.style.borderTop='4px solid';
-				this.style.borderBottom='4px solid';
+				/*this.style.borderTop='4px solid';*/
+				/*this.style.borderBottom='4px solid';*/
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '52' ;
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '52' ;
 				`;
 
 	var onmouseout = `
-				this.style.borderTop='1px solid';
-				this.style.borderBottom='1px solid';
+				/*this.style.borderTop='1px solid';*/
+				/*this.style.borderBottom='1px solid';*/
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '42' ;
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '42' ;
 				`;
@@ -300,14 +302,14 @@ var badge_htmldom = (function () {
 				}
 
 				//div_c.innerHTML = '<div><a style="'+a_html_style+'" class="btn btn-outline-light btn-lg" href="'+obj_call.onclick_link+'"><div style="'+logo_html_style+'"> <img src="img/logo.png" width="25" height="25"> </div> <div style="'+label_html_style+'">'+lbl+'</div> <div style="'+badge_html_style+'"> <span class="" style="'+value_html_style+'">'+obj_call.data[obj_call.preview]+'</span> </div></a></div>';
-
+        var a_css = "border-bottom: 1px solid; border-top: 1px solid;";
 				div_c.innerHTML =
 				`
 				<table>
-					<tr style="">
-					<td style=""> <img class="logo-img-oc" id="`+i+`" src="img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
-					<td style="">
-							<a id="`+i+`" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`" style="border-bottom: 1px solid; border-top: 1px solid;" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
+					<tr style="border: transparent;">
+					<td style="border: transparent;"> <img class="logo-img-oc" id="`+i+`" src="img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
+					<td style="border: transparent;">
+							<a id="`+i+`" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`" style="" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
 							<div style="font-size: 1.45rem; display: inline-block; padding-left:2%;">`+lbl+`</div> </br><div style="padding-right: 5%; display: inline-block;"> <span class="" style="font-size: 2.1rem;">`+obj_call.data[obj_call.preview]+`</span></div>
 							</a>
 					</td>
@@ -332,6 +334,7 @@ var badge_htmldom = (function () {
 var script_dom = badge_util.get_all_elements_with_attribute("src","static/js/badge.js");
 
 //INCLUDE JQUERY
+/*
 var script = document.createElement('script');
 script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js';
 script_dom[0].appendChild(script);
@@ -344,6 +347,7 @@ script_dom[0].appendChild(css);
 script = document.createElement('script');
 script.src = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js';
 script_dom[0].appendChild(script);
+*/
 
 
 //MAIN
