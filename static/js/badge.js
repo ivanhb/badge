@@ -259,16 +259,22 @@ var badge_util = (function () {
 var badge_htmldom = (function () {
 
 	//CSS RULES GLOB
+  var static_style = `
+          border-top: 1px solid;
+          border-bottom: 1px solid;
+          color: #2e5cb8;
+        `;
+
 	var onmouseover = `
-				/*this.style.borderTop='4px solid';*/
-				/*this.style.borderBottom='4px solid';*/
+				this.parentNode.style.borderTop='3px solid';
+				this.parentNode.style.borderBottom='3px solid';
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '52' ;
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '52' ;
 				`;
 
 	var onmouseout = `
-				/*this.style.borderTop='1px solid';*/
-				/*this.style.borderBottom='1px solid';*/
+        this.parentNode.style.borderTop='1px solid';
+        this.parentNode.style.borderBottom='1px solid';
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '42' ;
 				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '42' ;
 				`;
@@ -283,9 +289,9 @@ var badge_htmldom = (function () {
 									 padding-right: 2.5%;
 									 `;
 
-	var label_html_style = `font-size: 1.8rem; display: inline-block; padding-left:2%;`;
+	var label_html_style = `font-size: 1.8rem; display: inline-block; padding-left:2%; color: #9931FC;`;
 	var badge_html_style = `padding-right: 5%; display: inline-block;`;
-	var value_html_style = `font-size: 2.1rem;`;
+	var value_html_style = `font-size: 2.1rem; color: #9931FC;`;
 
 	function build_badge(obj_call) {
 		for (var i = 0; i < ocbadge_container.length; i++) {
@@ -306,11 +312,11 @@ var badge_htmldom = (function () {
 				div_c.innerHTML =
 				`
 				<table>
-					<tr style="border: transparent;">
+					<tr style="">
 					<td style="border: transparent;"> <img class="logo-img-oc" id="`+i+`" src="img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
-					<td style="border: transparent;">
+					<td style="`+static_style+` text-align: center;">
 							<a id="`+i+`" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`" style="" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
-							<div style="font-size: 1.45rem; display: inline-block; padding-left:2%;">`+lbl+`</div> </br><div style="padding-right: 5%; display: inline-block;"> <span class="" style="font-size: 2.1rem;">`+obj_call.data[obj_call.preview]+`</span></div>
+							<div style="font-size: 1.45rem; display: inline-block; padding-left:2%; color: #2e5cb8;">`+lbl+`</div></br><div style="padding-right: 5%; display: inline-block;"><span class="" style="font-size: 2.1rem; color: #2e5cb8;">`+obj_call.data[obj_call.preview]+`</span></div>
 							</a>
 					</td>
 					</tr>
