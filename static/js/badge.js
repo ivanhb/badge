@@ -311,7 +311,7 @@ var badge_htmldom = (function () {
         var a_css = "border-bottom: 1px solid; border-top: 1px solid;";
 				div_c.innerHTML =
 				`
-				<table>
+				<table style="display:block">
 					<tr style="">
 					<td style="border: transparent;"> <img class="logo-img-oc" id="`+i+`" src="https://ivanhb.github.io/badge/img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
 					<td style="`+static_style+` text-align: center;">
