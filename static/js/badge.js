@@ -313,7 +313,7 @@ var badge_htmldom = (function () {
 				`
 				<table>
 					<tr style="">
-					<td style="border: transparent;"> <img class="logo-img-oc" id="`+i+`" src="img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
+					<td style="border: transparent;"> <img class="logo-img-oc" id="`+i+`" src="https://github.com/opencitations/website/blob/master/static/img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
 					<td style="`+static_style+` text-align: center;">
 							<a id="`+i+`" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`" style="" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
 							<div style="font-size: 1.45rem; display: inline-block; padding-left:2%; color: #2e5cb8;">`+lbl+`</div></br><div style="padding-right: 5%; display: inline-block;"><span class="" style="font-size: 2.1rem; color: #2e5cb8;">`+obj_call.data[obj_call.preview]+`</span></div>
