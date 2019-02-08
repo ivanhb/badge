@@ -1,7 +1,7 @@
 var badge_conf = {
   'category': {
 
-    'br': {
+    'doi': {
 			'source': {
 					'name': 'oc_ramose',
 					'call': 'http://opencitations.net/index/coci/api/v1/metadata/[[VAR]]',
@@ -264,34 +264,14 @@ var badge_htmldom = (function () {
           border-bottom: 1px solid;
           color: #2e5cb8;
         `;
-
+        //color: #2e5cb8;
 	var onmouseover = `
-				this.parentNode.style.borderTop='3px solid';
-				this.parentNode.style.borderBottom='3px solid';
-				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '52' ;
-				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '52' ;
-				`;
-
+        this.style.opacity='1';
+        `;
 	var onmouseout = `
-        this.parentNode.style.borderTop='1px solid';
-        this.parentNode.style.borderBottom='1px solid';
-				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).width = '42' ;
-				badge_util.get_list_elem(document.getElementsByClassName('logo-img-oc'), 'id' , this.id).height = '42' ;
+				 this.style.opacity='0.5';
 				`;
-	//onmouseover="this.style.borderTop='4px solid'"
-	var a_html_style = `border-bottom: 1px solid;`;
-	var logo_html_style = `
-									 /*writing-mode: vertical-rl;*/
-									 /*text-orientation: mixed;*/
-									 font-size: 1.3rem;
-									 display: inline-block;
-									 margin:0 auto;
-									 padding-right: 2.5%;
-									 `;
 
-	var label_html_style = `font-size: 1.8rem; display: inline-block; padding-left:2%; color: #9931FC;`;
-	var badge_html_style = `padding-right: 5%; display: inline-block;`;
-	var value_html_style = `font-size: 2.1rem; color: #9931FC;`;
 
 	function build_badge(obj_call) {
 		for (var i = 0; i < ocbadge_container.length; i++) {
@@ -307,15 +287,13 @@ var badge_htmldom = (function () {
 					lbl = obj_call.labels[obj_call.preview];
 				}
 
-				//div_c.innerHTML = '<div><a style="'+a_html_style+'" class="btn btn-outline-light btn-lg" href="'+obj_call.onclick_link+'"><div style="'+logo_html_style+'"> <img src="img/logo.png" width="25" height="25"> </div> <div style="'+label_html_style+'">'+lbl+'</div> <div style="'+badge_html_style+'"> <span class="" style="'+value_html_style+'">'+obj_call.data[obj_call.preview]+'</span> </div></a></div>';
-        var a_css = "border-bottom: 1px solid; border-top: 1px solid;";
 				div_c.innerHTML =
 				`
-				<table style="display:block">
+				<table id="badge_content" style="display:block; opacity: 0.5;" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`">
 					<tr style="">
 					<td style="border: transparent;"> <img class="logo-img-oc" id="`+i+`" src="https://ivanhb.github.io/badge/img/logo.png" width="42" height="42" style="margin-left:4%;"> </td>
-					<td style="`+static_style+` text-align: center;">
-							<a id="`+i+`" onmouseover="`+onmouseover+`" onmouseout="`+onmouseout+`" style="" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
+					<td style="`+static_style+` text-align: center; min-width:110px; max-width:110px;" class="badge_text">
+							<a id="`+i+`" style="" class="btn btn-outline-light btn-lg" href="`+obj_call.onclick_link+`">
 							<div style="font-size: 1.45rem; display: inline-block; padding-left:2%; color: #2e5cb8;">`+lbl+`</div></br><div style="padding-right: 5%; display: inline-block;"><span class="" style="font-size: 2.1rem; color: #2e5cb8;">`+obj_call.data[obj_call.preview]+`</span></div>
 							</a>
 					</td>
