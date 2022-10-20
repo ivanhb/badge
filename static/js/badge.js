@@ -3,14 +3,12 @@ var badge_conf = {
 
     'doi': {
 			'source': {
-					'name': 'oc_ramose',
-					'call': 'http://opencitations.net/index/coci/api/v1/metadata/[[VAR]]',
+					'name': 'oc_api',
+					'call': 'https://opencitations.net/index/coci/api/v1/citation-count/[[VAR]]',
 					'format': 'json',
-					//can preview on_badge any value inside the fields, is chosen from the html tag attribute 'preview'
-		      'fields': ['citation_count','year'],
+		      'fields': ['count'],
 					'labels': {
-						'citation_count': 'Citations',
-						'year': 'Year',
+						'count': 'Citations'
 					},
 		      "respects": [],
 			},
@@ -18,12 +16,15 @@ var badge_conf = {
       //when highlighting the badge
       'onhighlighting': null,
       //when clicking on the badge
-      'onclick_link': 'http://opencitations.net/index/coci/browser/[[VAR]]'
+      'onclick_link': 'https://opencitations.net/index/coci/browser/[[VAR]]'
     }
   }
 }
 
 //GLOBALS
+//var ocbadge_container = document.getElementsByClassName("__oc_badge__");
+var this_script = document.currentScript;
+this_script.insertAdjacentHTML('afterend', '<span class="__oc_badge__" input="10.1186/1756-8722-6-59" type="doi" preview="count"></span>')
 var ocbadge_container = document.getElementsByClassName("__oc_badge__");
 
 //BADGE MODULES
@@ -108,6 +109,7 @@ var badge = (function () {
 																call_obj.respects);
 
 		//build the html dom now
+    console.log(badge_calls);
 		badge_htmldom.build_badge(badge_calls[result_obj.key]);
 	}
 
